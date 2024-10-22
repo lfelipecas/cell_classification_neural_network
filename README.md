@@ -1,89 +1,160 @@
-# Cell Classification Using Neural Networks
+# Cell Classification Neural Network Model
 
-## Project Overview
+## 1. Introduction
 
-This project focuses on the **classification of two types of blood cells**: **Basophils** and **Erythroblasts**, using **machine learning** techniques and, specifically, a **neural network model**. The input for the model comes from image data, where features such as **contrast** and **pixel count** are extracted from the images after processing them through **binary thresholding**. These features are then used to train, validate, and test a neural network that can distinguish between the two types of cells.
+This project is a binary classification model designed to classify two types of cells: **Basophils** and **Erythroblasts**. The project utilizes a simple deep learning model trained on features extracted from the grayscale images of these cells. The neural network model is implemented using **TensorFlow** and **Keras**, while image processing is handled with **OpenCV** and **Scikit-image**.
 
-The project demonstrates the steps required to preprocess the images, extract meaningful features, and implement a **feedforward neural network** for binary classification.
+The workflow consists of:
+- Image preprocessing
+- Feature extraction using Gray Level Co-occurrence Matrix (GLCM)
+- Data visualization and exploration
+- Neural network model design and training
+- Model evaluation with accuracy, loss, and confusion matrix plots
 
-## Project Structure
+The dataset is divided into **training**, **validation**, and **test** sets, and a binary classification model is trained on two features: **Contrast** and **Pixel Count** extracted from the processed images.
 
-The project contains the following directories:
+## 2. Project Structure
+
+The project structure is as follows:
+
 ```
 ├── data
-│   ├── Data_Cells_Test
-│   │   ├── Inference
-│   │   │   ├── Basofilos_inference
-│   │   │   └── Eritoblastos_inference
 │   ├── Data_Cells_Train
 │   │   ├── Basofilos_train
 │   │   └── Eritroblasto_train
-├── LICENSE
-├── .gitignore
-├── Cell_Classification_Neural_Network_Model.ipynb
+│   ├── Data_Cells_Test
+│   │   ├── Inference
+│   │   │   ├── Basofilos_inference
+│   │   │   └── Eritroblastos_inference
+├── Cell_Classification_Model.ipynb
 ├── README.md
-└── requirements.txt
+├── .gitignore
+└── LICENSE
 ```
 
-- **data**: This directory contains the training and test data used to train and evaluate the model. 
-  - `Data_Cells_Train`: Contains subfolders for **Basophils** and **Erythroblasts** used for training the model.
-  - `Data_Cells_Test`: Contains test data under the `Inference` subdirectory.
-  
-- `Cell_Classification_Neural_Network_Model.ipynb`: Contains the Python scripts that implement the feature extraction, model training, and evaluation processes.
+- `data/` contains the images for training and inference.
+- `Cell_Classification_Model.ipynb` contains the code implementation.
+- `.gitignore` ensures that unnecessary files (e.g., compiled Python files, virtual environments) are not included in the repository.
+- `LICENSE` includes the licensing information.
 
-## Key Components
+## 3. Dependencies
 
-### 1. Feature Extraction
+The project requires the following libraries:
+- `numpy`
+- `opencv-python`
+- `matplotlib`
+- `pandas`
+- `tensorflow`
+- `seaborn`
+- `scikit-image`
+- `scikit-learn`
 
-We use two key features extracted from each image:
-- **Contrast**: Using the Grey Level Co-occurrence Matrix (GLCM) to calculate the texture contrast of the cell.
-- **Pixel Count**: The number of white pixels in the binary thresholded image, representing the size of the cell.
+Install the required packages using the following command:
 
-These features are extracted using the following functions:
-- `apply_binary_threshold`: Converts grayscale images into binary images using a fixed threshold.
-- `calculate_contrast`: Computes the contrast using GLCM from the grayscale image.
-- `count_pixels`: Counts the number of white pixels in the binary image.
+```
+pip install -r requirements.txt
+```
 
-### 2. Neural Network Design
+## 4. Image Processing Functions
 
-The model is a **feedforward neural network** with the following architecture:
-- **Input Layer**: Takes 2 input features (contrast and pixel count).
-- **Hidden Layers**: 
-  - The first hidden layer has 16 neurons, ReLU activation, and L2 regularization to prevent overfitting.
-  - A Dropout layer (0.2) is applied to reduce overfitting.
-  - The second hidden layer has 8 neurons with ReLU activation and L2 regularization.
-- **Output Layer**: A single neuron with a **sigmoid activation** function to output a probability for binary classification (Basophil or Erythroblast).
+The project includes several image processing functions:
+- **Binary Thresholding**: Applies an inverted binary threshold to convert grayscale images to binary images.
+- **Contrast Calculation**: Uses GLCM (Gray Level Co-occurrence Matrix) to calculate the contrast of the image.
+- **Pixel Count**: Counts the number of white pixels (value 255) in the binary image.
 
-### 3. Model Training
+Each image is processed to extract these features, which are used as inputs to the neural network model.
 
-The model is trained using the **Adam optimizer** and **binary cross-entropy loss** function, with early stopping applied to prevent overfitting. The model is evaluated on validation and test sets.
+## 5. Data Visualization
 
-Training steps:
-1. **StandardScaler** is used to scale the data.
-2. The model is compiled with Adam and binary cross-entropy.
-3. **Early stopping** is applied during training to stop once validation loss stagnates.
-4. The accuracy and loss metrics are plotted to monitor the training process.
+### 5.1 Processed Images Visualization
 
-### 4. Evaluation
+The function `visualize_processed_images_by_rows()` is used to visualize a set of randomly selected processed images from each category. The processed images (binary images) are displayed in two rows:
+- The first row contains **Basophil** images.
+- The second row contains **Erythroblast** images.
 
-After training, the model is evaluated using:
-- **Test Accuracy**: The performance of the model on unseen test data.
-- **Confusion Matrix**: Visualizes the model's performance in classifying Basophils and Erythroblasts.
+Example:
 
-### How to Run the Project
+```
+random_basophil_images = select_random_images(basofilos_train_dir, num_images=10)
+random_erythroblast_images = select_random_images(eritroblasto_train_dir, num_images=10)
+visualize_processed_images_by_rows(random_basophil_images, random_erythroblast_images, num_images=10)
+```
 
-1. Clone the repository:
-   ```
-   git clone https://github.com/lfelipecas/cell_classification_neural_network
-   ```
+### 5.2 DataFrame and Scatter Plot
 
-2. Install dependencies:
-    ```
-    pip install -r requirements.txt
-    ```
+A `DataFrame` is created using the extracted features (Contrast, Pixel Count) and their respective labels (Basophil, Erythroblast). A scatter plot is then generated to show the distribution of **Contrast** vs **Pixel Count** for both classes.
 
-## License
-This project is licensed under the MIT License. See the LICENSE file for details.
+```
+df_train = create_dataframe(X_train_scaled, y_train, columns=["Contrast", "Pixel Count"])
+plot_scatter(df_train)
+```
 
-## Acknowledgments
+## 6. Neural Network Model
+
+The neural network used in this project is a **feed-forward fully connected network**. It is composed of:
+- **Input layer**: Accepts two features (Contrast and Pixel Count).
+- **Hidden layers**: Two dense layers with `ReLU` activation, each followed by **L2 regularization** to prevent overfitting.
+- **Dropout layer**: Added to randomly deactivate 20% of the neurons during training to avoid overfitting.
+- **Output layer**: A single neuron with **sigmoid activation** for binary classification.
+
+The model is compiled with the **Adam optimizer**, using **binary crossentropy** as the loss function.
+
+The neural network architecture is defined as follows:
+
+```
+model = tf.keras.Sequential([
+    tf.keras.layers.Input(shape=(2,)),  
+    tf.keras.layers.Dense(16, activation='relu', kernel_regularizer=regularizers.l2(0.001)),  
+    Dropout(0.2, seed=seed),
+    tf.keras.layers.Dense(8, activation='relu', kernel_regularizer=regularizers.l2(0.001)),  
+    tf.keras.layers.Dense(1, activation='sigmoid')
+])
+```
+
+### 6.1 Model Training
+
+The model is trained on the training data with early stopping to prevent overfitting. The training process tracks the accuracy and loss over epochs.
+
+```
+early_stopping = tf.keras.callbacks.EarlyStopping(monitor='val_loss', patience=10, restore_best_weights=True)
+history = model.fit(X_train_scaled, y_train, epochs=100, validation_data=(X_val_scaled, y_val), batch_size=8, callbacks=[early_stopping])
+```
+
+## 7. Performance Evaluation
+
+After training, the model's performance is evaluated on the test set, and several plots are generated:
+- **Accuracy and Loss Curves**: Plots showing the training and validation accuracy and loss over epochs.
+- **Confusion Matrix**: A matrix showing the number of correct and incorrect predictions for each class.
+
+```
+test_loss, test_accuracy = model.evaluate(X_test_scaled, y_test)
+print(f"Test Loss: {test_loss:.4f}")
+print(f"Test Accuracy: {test_accuracy:.4f}")
+
+# Confusion matrix
+cm = confusion_matrix(y_test, y_pred)
+disp = ConfusionMatrixDisplay(confusion_matrix=cm, display_labels=["Basophil", "Erythroblast"])
+disp.plot(cmap=plt.cm.Blues)
+plt.title("Confusion Matrix")
+plt.show()
+```
+
+## 8. Results
+
+The final model is evaluated on the test set, and performance metrics such as **accuracy** and **loss** are calculated. The confusion matrix provides insights into the number of correctly classified cells from both classes.
+
+The trained model achieves:
+
+- **Test Loss**: The final loss value on the test set.
+- **Test Accuracy**: The final accuracy of the model on the test set.
+
+## 9. Conclusion
+
+This project demonstrates a simple and effective approach to binary classification of cell images using basic image processing techniques and a neural network model. By extracting key features (Contrast and Pixel Count), we are able to classify Basophils and Erythroblasts with high accuracy. The project also emphasizes good practices such as the use of regularization and dropout to prevent overfitting and the visualization of results for better interpretability.
+
+## 10. License
+
+This project is licensed under the MIT License - see the LICENSE file for details.
+
+## 11. Acknowledgments
 Special thanks to the guidance and dataset provided by Professor Felipe Palta in his lessons on neural networks and machine learning.
