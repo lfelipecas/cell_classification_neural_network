@@ -29,9 +29,7 @@ The project contains the following directories:
   - `Data_Cells_Train`: Contains subfolders for **Basophils** and **Erythroblasts** used for training the model.
   - `Data_Cells_Test`: Contains test data under the `Inference` subdirectory.
   
-- **scripts**: Contains the Python scripts that implement the feature extraction, model training, and evaluation processes.
-  - `cell_classification.py`: The main script that runs the full pipeline from data preprocessing to model evaluation.
-  - `utils.py`: A helper script that contains utility functions for feature extraction and image processing.
+- `Cell_Classification_Neural_Network_Model.ipynb`: Contains the Python scripts that implement the feature extraction, model training, and evaluation processes.
 
 ## Key Components
 
